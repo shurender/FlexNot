@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}My Watchlist - FlexNot{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold mb-2">My Watchlist</h1>
+        <p class="text-gray-400">Movies you want to watch later</p>
+    </div>
+
+    {% if movies %}
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        {% for movie in movies %}
+        <div class="movie-card bg-gray-800 rounded-lg overflow-hidden">
+            <a href="{{ url_for('movie_details', movie_id=movie[0]) }}">
+                {% if movie[3] and movie[3] != 'N/A' %}
+                    <img src="{{ movie[3] }}" 
+                         alt="{{ movie[1] }}" 
+                         class="w-full h-80 object-cover"
+                         onerror="this.parentElement.innerHTML='<div class=\'w-full h-80 bg-gray-700 flex items-center justify-center\'><i class=\'fas fa-film text-4xl text-gray-500\'></i></div>'">
+                {% else %}
+                    <div class="w-full h-80 bg-gray-700 flex items-center justify-center">
+                        <i class="fas fa-film text-4xl text-gray-500"></i>
+                    </div>
+                {% endif %}
+                <div class="p-4">
+                    <h3 class="font-semibold text-sm mb-2 line-clamp-2">{{ movie[1] }}</h3>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-yellow-400 text-sm"></i>
+                            <span class="text-sm text-gray-300 ml-1">{{ "%.1f"|format(movie[6] or 0) }}</span>
+                        </div>
+                        {% if movie[5] %}
+                            <span class="text-xs text-gray-400">{{ movie[5][:4] if movie[5]|length > 4 else movie[5] }}</span>
+                        {% endif %}
+                    </div>
+                    {% if movie[8] %}
+                    <div class="mt-1">
+                        <span class="text-xs text-gray-500">{{ movie[8][:30] }}{% if movie[8]|length > 30 %}...{% endif %}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-12">
+        <i class="fas fa-bookmark text-6xl text-gray-500 mb-4"></i>
+        <h3 class="text-xl font-semibold mb-2">Your watchlist is empty</h3>
+        <p class="text-gray-400 mb-6">Start adding movies you want to watch!</p>
+        <a href="{{ url_for('search') }}" class="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-lg font-semibold transition-colors">
+            Browse Movies
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

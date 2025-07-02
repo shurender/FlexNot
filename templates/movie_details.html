@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}{{ movie[1] }} - FlexNot{% endblock %}
+
+{% block content %}
+<div class="relative">
+    <!-- Backdrop -->
+    {% if movie[4] and movie[4] != 'N/A' %}
+    <div class="absolute inset-0 z-0">
+        <img src="{{ movie[4] }}" 
+             alt="{{ movie[1] }}" 
+             class="w-full h-96 object-cover opacity-20"
+             onerror="this.style.display='none'">
+        <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/50 to-transparent"></div>
+    </div>
+    {% endif %}
+    
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Poster -->
+            <div class="flex-shrink-0">
+                {% if movie[3] and movie[3] != 'N/A' %}
+                    <img src="{{ movie[3] }}" 
+                         alt="{{ movie[1] }}" 
+                         class="w-80 h-auto rounded-lg shadow-2xl"
+                         onerror="this.parentElement.innerHTML='<div class=\'w-80 h-96 bg-gray-700 rounded-lg flex items-center justify-center\'><i class=\'fas fa-film text-6xl text-gray-500\'></i></div>'">
+                {% else %}
+                    <div class="w-80 h-96 bg-gray-700 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-film text-6xl text-gray-500"></i>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Movie Details -->
+            <div class="flex-1">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">{{ movie[1] }}</h1>
+                
+                <div class="flex flex-wrap items-center gap-6 mb-6">
+                    <div class="flex items-center">
+                        <i class="fas fa-star text-yellow-400 text-xl mr-2"></i>
+                        <span class="text-xl font-semibold">{{ "%.1f"|format(movie[6] or 0) }}</span>
+                        <span class="text-gray-400 ml-2">({{ "{:,}".format(movie[7] or 0) }} votes)</span>
+                    </div>
+                    {% if movie[5] %}
+                    <div class="flex items-center">
+                        <i class="fas fa-calendar text-gray-400 mr-2"></i>
+                        <span>{{ movie[5] }}</span>
+                    </div>
+                    {% endif %}
+                    {% if movie[9] %}
+                    <div class="flex items-center">
+                        <i class="fas fa-clock text-gray-400 mr-2"></i>
+                        <span>{{ movie[9] }}</span>
+                    </div>
+                    {% endif %}
+                    {% if movie[8] %}
+                    <div class="flex items-center">
+                        <i class="fas fa-tags text-gray-400 mr-2"></i>
+                        <span>{{ movie[8] }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Action Buttons -->
+                {% if session.user_id %}
+                <div class="flex gap-4 mb-6">
+                    <button onclick="addToWatchlist('{{ movie[0] }}')" 
+                            class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-semibold transition-colors">
+                        <i class="fas fa-bookmark mr-2"></i>Add to Watchlist
+                    </button>
+                </div>
+                {% endif %}
+                
+                <!-- User Rating -->
+                {% if session.user_id %}
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-2">Your Rating:</h3>
+                    <div class="flex items-center space-x-1">
+                        {% for i in range(1, 6) %}
+                        <i class="fas fa-star rating-star cursor-pointer text-2xl
+                           {% if user_rating and i <= user_rating %}text-yellow-400{% else %}text-gray-600{% endif %}" 
+                           onclick="rateMovie('{{ movie[0] }}', {i})"></i>
+                        {% endfor %}
+                        {% if user_rating %}
+                        <span class="ml-2 text-sm text-gray-400">You rated this {{ user_rating }}/5</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Overview -->
+                {% if movie[2] %}
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3">Plot</h3>
+                    <p class="text-gray-300 leading-relaxed">{{ movie[2] }}</p>
+                </div>
+                {% endif %}
+                
+                <!-- Additional Details -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {% if movie[10] %}
+                    <div>
+                        <h4 class="font-semibold text-gray-400 mb-1">Director</h4>
+                        <p>{{ movie[10] }}</p>
+                    </div>
+                    {% endif %}
+                    {% if movie[11] %}
+                    <div>
+                        <h4 class="font-semibold text-gray-400 mb-1">Cast</h4>
+                        <p>{{ movie[11] }}</p>
+                    </div>
+                    {% endif %}
+                    {% if movie[12] %}
+                    <div>
+                        <h4 class="font-semibold text-gray-400 mb-1">Country</h4>
+                        <p>{{ movie[12] }}</p>
+                    </div>
+                    {% endif %}
+                    {% if movie[13] %}
+                    <div>
+                        <h4 class="font-semibold text-gray-400 mb-1">Language</h4>
+                        <p>{{ movie[13] }}</p>
+                    </div>
+                    {% endif %}
+                    {% if movie[14] %}
+                    <div>
+                        <h4 class="font-semibold text-gray-400 mb-1">Awards</h4>
+                        <p>{{ movie[14] }}</p>
+                    </div>
+                    {% endif %}
+                    {% if movie[15] %}
+                    <div>
+                        <h4 class="font-semibold text-gray-400 mb-1">Box Office</h4>
+                        <p>{{ movie[15] }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

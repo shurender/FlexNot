@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-gradient py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-5xl md:text-7xl font-bold mb-6">
+            <span class="bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 bg-clip-text text-transparent">
+                FlexNot
+            </span>
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+            Discover amazing movies from around the world. Get personalized recommendations and never miss the latest releases.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            {% if not session.user_id %}
+                <a href="{{ url_for('register') }}" class="bg-red-600 hover:bg-red-700 px-8 py-3 rounded-lg text-lg font-semibold transition-colors">
+                    Get Started
+                </a>
+            {% else %}
+                <a href="{{ url_for('dashboard') }}" class="bg-red-600 hover:bg-red-700 px-8 py-3 rounded-lg text-lg font-semibold transition-colors">
+                    View Recommendations
+                </a>
+            {% endif %}
+            <a href="{{ url_for('search') }}" class="border border-white hover:bg-white hover:text-gray-900 px-8 py-3 rounded-lg text-lg font-semibold transition-colors">
+                Browse Movies
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- New Releases -->
+{% if new_releases %}
+<section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-3xl font-bold">New Releases</h2>
+            <span class="bg-red-600 px-3 py-1 rounded-full text-sm font-semibold">NEW</span>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {% for movie in new_releases %}
+            <div class="movie-card bg-gray-800 rounded-lg overflow-hidden">
+                <a href="{{ url_for('movie_details', movie_id=movie[0]) }}">
+                    {% if movie[3] and movie[3] != 'N/A' %}
+                        <img src="{{ movie[3] }}" 
+                             alt="{{ movie[1] }}" 
+                             class="w-full h-80 object-cover"
+                             onerror="this.parentElement.innerHTML='<div class=\'w-full h-80 bg-gray-700 flex items-center justify-center\'><i class=\'fas fa-film text-4xl text-gray-500\'></i></div>'">
+                    {% else %}
+                        <div class="w-full h-80 bg-gray-700 flex items-center justify-center">
+                            <i class="fas fa-film text-4xl text-gray-500"></i>
+                        </div>
+                    {% endif %}
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2 line-clamp-2">{{ movie[1] }}</h3>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <span class="text-sm text-gray-300 ml-1">{{ "%.1f"|format(movie[6] or 0) }}</span>
+                            </div>
+                            {% if movie[5] %}
+                                <span class="text-xs text-gray-400">{{ movie[5][:4] if movie[5]|length > 4 else movie[5] }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="mt-2">
+                            <button onclick="addToWatchlist('{{ movie[0] }}')" 
+                                    class="w-full bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-xs transition-colors">
+                                <i class="fas fa-bookmark mr-1"></i>Add to Watchlist
+                            </button>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Featured Movies -->
+<section class="py-16 bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold mb-8">Featured Movies</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            {% for movie in featured_movies %}
+            <div class="movie-card bg-gray-900 rounded-lg overflow-hidden">
+                <a href="{{ url_for('movie_details', movie_id=movie[0]) }}">
+                    {% if movie[3] and movie[3] != 'N/A' %}
+                        <img src="{{ movie[3] }}" 
+                             alt="{{ movie[1] }}" 
+                             class="w-full h-80 object-cover"
+                             onerror="this.parentElement.innerHTML='<div class=\'w-full h-80 bg-gray-700 flex items-center justify-center\'><i class=\'fas fa-film text-4xl text-gray-500\'></i></div>'">
+                    {% else %}
+                        <div class="w-full h-80 bg-gray-700 flex items-center justify-center">
+                            <i class="fas fa-film text-4xl text-gray-500"></i>
+                        </div>
+                    {% endif %}
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2 line-clamp-2">{{ movie[1] }}</h3>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <span class="text-sm text-gray-300 ml-1">{{ "%.1f"|format(movie[6] or 0) }}</span>
+                            </div>
+                            {% if movie[5] %}
+                                <span class="text-xs text-gray-400">{{ movie[5][:4] if movie[5]|length > 4 else movie[5] }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="mt-2">
+                            <button onclick="addToWatchlist('{{ movie[0] }}')" 
+                                    class="w-full bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-xs transition-colors">
+                                <i class="fas fa-bookmark mr-1"></i>Add to Watchlist
+                            </button>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-center mb-12">Why Choose FlexNot?</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="text-center">
+                <div class="bg-red-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-globe text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Global Movie Database</h3>
+                <p class="text-gray-400">Access movies from all around the world via OMDB API</p>
+            </div>
+            <div class="text-center">
+                <div class="bg-yellow-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-magic text-2xl text-black"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Smart Recommendations</h3>
+                <p class="text-gray-400">AI-powered recommendations based on your preferences</p>
+            </div>
+            <div class="text-center">
+                <div class="bg-green-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-search text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Real-time Search</h3>
+                <p class="text-gray-400">Search and add any movie instantly from OMDB</p>
+            </div>
+        </div>
+    </div>
+    <footer style="text-align:center; padding:10px; background:#222; color:#ccc; font-size:14px;">
+  by@shurender
+</footer>
+
+</section>
+{% endblock %}
