@@ -572,12 +572,13 @@ def search():
     cursor = conn.cursor()
     
     # Search in local database first
+    search_pattern = f'%{query}%'
     cursor.execute('''
         SELECT * FROM movies 
         WHERE title LIKE ? OR overview LIKE ? OR cast LIKE ? OR director LIKE ?
         ORDER BY vote_average DESC, vote_count DESC
         LIMIT 50
-    ''', (f'%{query}%', f'%{query}%', f'%{query}%', f'%{query}%'))
+    ''', (search_pattern, search_pattern, search_pattern, search_pattern))
     
     movies = cursor.fetchall()
     
@@ -591,7 +592,7 @@ def search():
                 WHERE title LIKE ? OR overview LIKE ?
                 ORDER BY vote_average DESC, vote_count DESC
                 LIMIT 50
-            ''', (f'%{query}%', f'%{query}%'))
+            ''', (search_pattern, search_pattern))
             movies = cursor.fetchall()
     
     conn.close()
